@@ -1,7 +1,7 @@
 package com.project.user_service.controller;
 
 import com.project.user_service.common.ApiResponse;
-import com.project.user_service.common.JwtUtil;
+import com.project.user_service.security.JwtUtil;
 import com.project.user_service.dto.LoginRequestDto;
 import com.project.user_service.entity.User;
 import com.project.user_service.expection.ResourceNotFoundException;
