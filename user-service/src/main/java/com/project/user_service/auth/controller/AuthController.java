@@ -1,11 +1,11 @@
-package com.project.user_service.controller;
+package com.project.user_service.auth.controller;
 
 import com.project.user_service.common.ApiResponse;
-import com.project.user_service.security.JwtUtil;
-import com.project.user_service.dto.LoginRequestDto;
+import com.project.user_service.auth.dto.LoginRequestDto;
 import com.project.user_service.entity.User;
 import com.project.user_service.expection.ResourceNotFoundException;
 import com.project.user_service.repository.UserRepository;
+import com.project.user_service.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,7 +31,7 @@ public class LoginController {
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
             throw new RuntimeException("Invalid Credentials");
         }
-        String token =jwtUtil.generateToken(user.getEmail(),user.getRole());
+
         return ResponseEntity.ok((new ApiResponse<>(true,"Login successful",Map.of("token",token))));
     }
 }
