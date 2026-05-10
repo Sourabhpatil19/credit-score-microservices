@@ -1,5 +1,6 @@
 package com.project.user_service.entity;
 
+import com.project.user_service.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +22,10 @@ public class User{
     private String password;
     @Column(nullable = false , unique = true)
     private String email;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

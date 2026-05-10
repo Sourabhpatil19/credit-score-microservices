@@ -1,37 +1,60 @@
 package com.project.user_service.auth.controller;
 
-import com.project.user_service.common.ApiResponse;
 import com.project.user_service.auth.dto.LoginRequestDto;
-import com.project.user_service.entity.User;
-import com.project.user_service.expection.ResourceNotFoundException;
-import com.project.user_service.repository.UserRepository;
-import com.project.user_service.security.JwtUtil;
+import com.project.user_service.auth.dto.LoginResponseDto;
+import com.project.user_service.auth.dto.RefreshTokenRequestDto;
+import com.project.user_service.auth.dto.RefreshTokenResponseDto;
+import com.project.user_service.auth.service.AuthService;
+import com.project.user_service.common.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
-public class LoginController {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+@RequestMapping("/auth")
+public class AuthController {
+private final AuthService authService;
 
-    @PostMapping("/authenticate")
-    public ResponseEntity<ApiResponse<Map<String, String>>> authenticate(@RequestBody LoginRequestDto request){
-        User user = userRepository.findByEmail(request.getEmail()).
-                orElseThrow(()-> new ResourceNotFoundException("Invalid Credentials"));
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new RuntimeException("Invalid Credentials");
-        }
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@Valid @RequestBody LoginRequestDto dto){
+        LoginResponseDto response = authService.authenticate(dto);
 
-        return ResponseEntity.ok((new ApiResponse<>(true,"Login successful",Map.of("token",token))));
+        return ResponseEntity.ok( ApiResponse.<LoginResponseDto>builder()
+                .success(true)
+                .message("Login successful")
+                .data(response)
+                .build());
+    }
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<RefreshTokenResponseDto>> refreshToken( @Valid @RequestBody RefreshTokenRequestDto dto){
+        RefreshTokenResponseDto response =
+               authService.refreshAccessToken(dto);
+
+
+        return ResponseEntity.ok(
+                ApiResponse.<RefreshTokenResponseDto>builder()
+                        .success(true)
+                        .message("Access token refreshed successfully")
+                        .data(response)
+                        .build()
+        );
+
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Object>> logout(
+            @RequestParam String email
+    ) {
+
+        authService.logout(email);
+
+        return ResponseEntity.ok(
+                ApiResponse.builder()
+                        .success(true)
+                        .message("Logged out successfully")
+                        .data(null)
+                        .build()
+        );
     }
 }

@@ -1,79 +1,51 @@
 package com.project.user_service.auth.service;
 
-import com.project.user_service.dto.UserRequestDto;
-import com.project.user_service.dto.UserResponseDto;
-import com.project.user_service.entity.User;
-import com.project.user_service.expection.DuplicateResourceException;
-import com.project.user_service.expection.ResourceNotFoundException;
-import com.project.user_service.repository.UserRepository;
+import com.project.user_service.auth.entity.RefreshToken;
+import com.project.user_service.auth.repository.RefreshTokenRepository;
+import com.project.user_service.expection.InvalidTokenException;
+import com.project.user_service.expection.TokenExpiredException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl  implements UserService {
+@Transactional
+public class RefreshTokenService  {
 
-    private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository repository;
+
 
 //Create User
-    @Override
-    public UserResponseDto createUser(UserRequestDto dto) {
+    public RefreshToken createRefreshToken(String email) {
         // check duplicate email
-        repository.findByEmail(dto.getEmail()).ifPresent(user -> {throw new
-                DuplicateResourceException("Email is already exists");});
-        // encode password
-         User user=  User.builder().username(dto.getUsername()).email(dto.getEmail()).
-                                    password(passwordEncoder.encode(dto.getPassword())).
-                    role("OFFICER").build();
-         User savedUser= repository.save(user);
-        return mapToResponse(savedUser);
+        repository.deleteByEmail(email);
+       RefreshToken refreshToken= RefreshToken.builder().token(UUID.randomUUID().toString()).email(email).
+                                    expiryDate(LocalDateTime.now().plusDays(7)).
+                   build();
+         return  repository.save(refreshToken);
+
     }
 
-    private UserResponseDto mapToResponse(User user) {
-        return UserResponseDto.builder().email(user.getEmail()).id(user.getId())
-                .role(user.getRole()).username(user.getUsername()).build();
-    }
-
-    @Override
-    public UserResponseDto getUserById(Long id) {
-        User user = repository.findById(id).
-                orElseThrow(()->new ResourceNotFoundException("User not found with id: "+id));
-            return mapToResponse(user);
-    }
-
-    @Override
-    public List<UserResponseDto> getAllUsers() {
-
-        return repository.findAll().stream().map(this::mapToResponse).toList();
-    }
-
-    @Override
-    public UserResponseDto updateUser(Long id, UserRequestDto dto) {
-        User existingUser= repository.findById(id).
-                orElseThrow(()->new  ResourceNotFoundException("User not found with id: "+id));
-
-        if(!existingUser.getEmail().equals(dto.getEmail())){
-            repository.findByEmail(dto.getEmail()).ifPresent(user -> {throw new
-                    DuplicateResourceException("Email is already exists");});
+    public RefreshToken verifyRefreshToken(String token){
+        RefreshToken refreshToken= repository.findByToken(token).orElseThrow(()->new InvalidTokenException("Invalid refresh token"));
+        if(refreshToken.getExpiryDate().isBefore(LocalDateTime.now())){
+            throw  new TokenExpiredException("Token is expired");
         }
-        existingUser.setUsername(dto.getUsername());
-        existingUser.setEmail(dto.getEmail());
+        return refreshToken;
+    }
+    public void deleteRefreshToken(String email) {
 
-        if(dto.getPassword() !=null && !dto.getPassword().isBlank()){
-            existingUser.setPassword(passwordEncoder.encode(dto.getPassword()));
-        }
-        User updated =repository.save(existingUser);
-        return mapToResponse(updated);
+        repository.deleteByEmail(email);
     }
 
-    @Override
-    public void deleteUser(Long id) {
-        User user = repository.findById(id).
-                orElseThrow(()->new  ResourceNotFoundException("User not found with id: "+id));
 
-        repository.delete(user);
-    }
+
+
+
+
+
 }
