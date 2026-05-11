@@ -31,7 +31,7 @@ class UserIntegrationTest {
         UserRequestDto dto = new UserRequestDto();
 
         dto.setUsername("IntegrationUser");
-        dto.setEmail("integration@gmail.com");
+        dto.setEmail("integration2@gmail.com");
         dto.setPassword("Password1");
 
         mockMvc.perform(post("/users")
