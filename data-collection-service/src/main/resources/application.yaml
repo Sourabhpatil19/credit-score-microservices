@@ -1,32 +1,22 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   application:
-    name: user-service
-
+    name: data-collection-service
 
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/credit_system}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
-
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka}
 
-
   instance:
     prefer-ip-address: true
-
-jwt:
-  secret: ${JWT_SECRET:myverystrongjwtsecretkeyforhs256algorithm123456789}
-  refresh-token-expiration: 7
-  access-token-expiration: 900000

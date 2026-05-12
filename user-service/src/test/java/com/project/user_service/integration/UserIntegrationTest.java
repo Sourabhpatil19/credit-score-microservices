@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -26,18 +27,19 @@ class UserIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+
     void createUser_ShouldReturn200() throws Exception {
 
         UserRequestDto dto = new UserRequestDto();
 
         dto.setUsername("IntegrationUser");
-        dto.setEmail("integration@gmail.com");
+        dto.setEmail(System.currentTimeMillis() + "@gmail.com");
         dto.setPassword("Password1");
+
 
         mockMvc.perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                                objectMapper.writeValueAsString(dto)
-                        ))
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andDo(print())
                 .andExpect(status().isOk());
     }}

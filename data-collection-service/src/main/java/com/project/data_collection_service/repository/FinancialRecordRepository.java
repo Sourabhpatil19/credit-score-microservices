@@ -1,0 +1,12 @@
+package com.project.data_collection_service.repository;
+
+import com.project.data_collection_service.entity.FinancialRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FinancialRecordRepository
+        extends JpaRepository<FinancialRecord, Long> {
+
+    Page<FinancialRecord> findByUserId(Long userId, Pageable pageable);
+}
