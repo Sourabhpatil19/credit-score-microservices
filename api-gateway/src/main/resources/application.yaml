@@ -18,6 +18,11 @@ spring:
           predicates:
             - Path=/auth/**
 
+        - id: data-collection-service
+          uri: lb://data-collection-service
+          predicates:
+            - Path=/financial-records/**
+
 eureka:
   client:
     service-url:
