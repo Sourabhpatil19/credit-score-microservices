@@ -2,9 +2,9 @@ package com.project.user_service.config;
 
 import com.project.user_service.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Autowired
+
   private final JwtFilter jwtFilter;
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -42,15 +42,27 @@ public class SecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
 
+                        // PUBLIC USER CREATION
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/users"
+                        ).permitAll()
+
                         // ADMIN ONLY
-                        .requestMatchers("/users/**")
+                        .requestMatchers("/users/all")
                         .hasRole("ADMIN")
 
                         // OFFICER + ADMIN
-                        .requestMatchers("/customers/**")
-                        .hasAnyRole("OFFICER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/users/*"
+                        ).hasAnyRole("OFFICER", "ADMIN")
 
-                        // ALL OTHER APIs
+                        // ALL OTHER USER APIs -> ADMIN
+                        .requestMatchers("/users/**")
+                        .hasRole("ADMIN")
+
+                        // EVERYTHING ELSE
                         .anyRequest()
                         .authenticated()
                 )
