@@ -2,10 +2,12 @@ package com.project.data_collection_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 
 import java.time.LocalDate;
-
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -26,5 +28,10 @@ public class FinancialRecord {
     private String transactionType;
     private String transactionDescription;
     private String category;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 }

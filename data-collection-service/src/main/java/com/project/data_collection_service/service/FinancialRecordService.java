@@ -1,12 +1,17 @@
 package com.project.data_collection_service.service;
 
 import com.project.data_collection_service.dto.FinancialRecordRequestDto;
+import com.project.data_collection_service.dto.FinancialRecordResponseDto;
 import com.project.data_collection_service.entity.FinancialRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface FinancialRecordService {
-    FinancialRecord createRecord(FinancialRecordRequestDto dto);
-    List<FinancialRecord> getByUserId(Long userId);
+    FinancialRecordResponseDto createRecord(FinancialRecordRequestDto dto);
+    Page<FinancialRecordResponseDto > getByUserId(Long userId,
+                                      Pageable pageable);
+    List<FinancialRecordResponseDto> getAllRecords();
 
 }

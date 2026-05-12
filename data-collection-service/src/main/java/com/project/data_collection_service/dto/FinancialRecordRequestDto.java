@@ -4,24 +4,26 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+
 import java.time.LocalDate;
+
 
 @Data
 public class FinancialRecordRequestDto {
 
-    @NotNull
+    @NotNull(message = "User Id is required")
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "Transaction date is required")
     private LocalDate transactionDate;
 
-    @NotNull
+    @NotNull(message = "Amount is required")
     private Double amount;
 
-    @NotBlank
+    @NotBlank(message = "Transaction type is required")
     private String transactionType;
-
     private String transactionDescription;
 
     private String category;
+
 }
