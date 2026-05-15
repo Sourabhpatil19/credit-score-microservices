@@ -11,16 +11,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name = "Financial Record APIs")
 @RestController
-@RequestMapping("/financial-records")
+@RequestMapping("/api/v1/financial-records")
 @RequiredArgsConstructor
 public class FinancialRecordController {
 
@@ -49,5 +52,31 @@ public class FinancialRecordController {
         return service.getByUserId(
                 userId,
                 PageRequest.of(page, size));
+    }
+    @GetMapping("/category/{category}")
+    public ResponseEntity<Page<FinancialRecordResponseDto>> getByCategory(
+            @PathVariable String category,
+            @ParameterObject Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                service.getByCategory(category, pageable)
+        );
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Page<FinancialRecordResponseDto>> filterRecords(
+            @RequestParam String category,
+            @RequestParam String type,
+            @ParameterObject Pageable pageable
+    ) {
+
+        return ResponseEntity.ok(
+                service.getByCategoryAndType(
+                        category,
+                        type,
+                        pageable
+                )
+        );
     }
 }

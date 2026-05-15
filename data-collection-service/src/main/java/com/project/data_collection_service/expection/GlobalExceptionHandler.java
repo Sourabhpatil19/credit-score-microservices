@@ -1,6 +1,8 @@
 package com.project.data_collection_service.expection;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -8,42 +10,62 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+
+    private static final Logger logger =
+            LogManager.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleNotFound(
             ResourceNotFoundException ex) {
 
-        Map<String, Object> error = new HashMap<>();
-
-        error.put("timestamp", LocalDateTime.now());
-        error.put("message", ex.getMessage());
-        error.put("status", 404);
-
-        return new ResponseEntity<>(
-                error,
-                HttpStatus.NOT_FOUND);
+        ApiErrorResponse response = ApiErrorResponse.builder()
+                .message(ex.getMessage())
+                .status(HttpStatus.NOT_FOUND.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+        logger.error(
+                "Resource not found exception occurred",
+                ex
+        );
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidation(
+    public ResponseEntity<ApiErrorResponse> handleValidationException(
             MethodArgumentNotValidException ex) {
 
-        Map<String, String> errors = new HashMap<>();
+        String errorMessage = ex.getBindingResult()
+                .getFieldError()
+                .getDefaultMessage();
 
-        ex.getBindingResult()
-                .getFieldErrors()
-                .forEach(error ->
-                        errors.put(
-                                error.getField(),
-                                error.getDefaultMessage()));
+        ApiErrorResponse response = ApiErrorResponse.builder()
+                .message(errorMessage)
+                .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+        logger.error(
+                "Bad Request exception occurred",
+                ex
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+}    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(
+            Exception ex) {
 
-        return new ResponseEntity<>(
-                errors,
-                HttpStatus.BAD_REQUEST);
-    }
-}
+        ApiErrorResponse response = ApiErrorResponse.builder()
+                .message(ex.getMessage())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .timestamp(LocalDateTime.now())
+                .build();
+        logger.error(
+                "Server is not available",
+                ex
+        );
+        return new ResponseEntity<>(response,
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }}

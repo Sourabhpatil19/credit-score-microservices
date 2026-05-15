@@ -13,5 +13,14 @@ public interface FinancialRecordService {
     Page<FinancialRecordResponseDto > getByUserId(Long userId,
                                       Pageable pageable);
     List<FinancialRecordResponseDto> getAllRecords();
+    Page<FinancialRecordResponseDto> getByCategory(
+            String category,
+            Pageable pageable
+    );
+    Page<FinancialRecordResponseDto> getByCategoryAndType(
+            String category,
+            String transactionType,
+            Pageable pageable
+    );
 
 }
