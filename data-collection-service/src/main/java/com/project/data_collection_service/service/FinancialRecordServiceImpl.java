@@ -107,4 +107,16 @@ public class FinancialRecordServiceImpl
 
         return records.map(this::mapToDto);
     }
+    @Override
+    public List<FinancialRecordResponseDto> getByUserId(Long userId) {
+
+        logger.info("Fetching records for userId: {}", userId);
+
+        List<FinancialRecord> records =
+                repository.findByUserId(userId);
+
+        return records.stream()
+                .map(this::mapToDto)
+                .toList();
+    }
 }

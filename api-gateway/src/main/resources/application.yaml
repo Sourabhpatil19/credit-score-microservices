@@ -22,7 +22,10 @@ spring:
           uri: lb://data-collection-service
           predicates:
             - Path=/financial-records/**
-
+        - id: score-service
+          uri: lb://score-service
+          predicates:
+            - Path=/score-service/**
 eureka:
   client:
     service-url:

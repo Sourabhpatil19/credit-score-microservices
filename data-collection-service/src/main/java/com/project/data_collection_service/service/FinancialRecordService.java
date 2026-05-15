@@ -22,5 +22,6 @@ public interface FinancialRecordService {
             String transactionType,
             Pageable pageable
     );
+    List<FinancialRecordResponseDto> getByUserId(Long userId);
 
 }

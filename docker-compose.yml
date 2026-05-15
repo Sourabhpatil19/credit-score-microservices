@@ -73,7 +73,23 @@ services:
       - user-service
     networks:
       - backend-network
+  score-service:
+    build: ./score-service
+    container_name: score-service
+    ports:
+      - "8082:8082"
 
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      discovery-server:
+        condition: service_started
+
+    networks:
+      - backend-network
 networks:
   backend-network:
 

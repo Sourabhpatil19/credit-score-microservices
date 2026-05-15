@@ -23,7 +23,7 @@ import java.util.List;
 
 @Tag(name = "Financial Record APIs")
 @RestController
-@RequestMapping("/api/v1/financial-records")
+@RequestMapping("/financial-records")
 @RequiredArgsConstructor
 public class FinancialRecordController {
 
@@ -78,5 +78,11 @@ public class FinancialRecordController {
                         pageable
                 )
         );
+    }
+    @GetMapping("/user/{userId}")
+    public List<FinancialRecordResponseDto> getByUserId(
+            @PathVariable Long userId
+    ) {
+        return service.getByUserId(userId);
     }
 }
