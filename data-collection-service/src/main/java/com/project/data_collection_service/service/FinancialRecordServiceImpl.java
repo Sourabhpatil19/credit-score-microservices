@@ -80,4 +80,31 @@ public class FinancialRecordServiceImpl
                 .category(record.getCategory())
                 .build();
     }
+    @Override
+    public Page<FinancialRecordResponseDto> getByCategory(
+            String category,
+            Pageable pageable
+    ) {
+
+        Page<FinancialRecord> records =
+                repository.findByCategory(category, pageable);
+
+        return records.map(this::mapToDto);
+    }
+    @Override
+    public Page<FinancialRecordResponseDto> getByCategoryAndType(
+            String category,
+            String transactionType,
+            Pageable pageable
+    ) {
+
+        Page<FinancialRecord> records =
+                repository.findByCategoryAndTransactionType(
+                        category,
+                        transactionType,
+                        pageable
+                );
+
+        return records.map(this::mapToDto);
+    }
 }

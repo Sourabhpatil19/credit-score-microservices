@@ -9,4 +9,13 @@ public interface FinancialRecordRepository
         extends JpaRepository<FinancialRecord, Long> {
 
     Page<FinancialRecord> findByUserId(Long userId, Pageable pageable);
+    Page<FinancialRecord> findByCategory(
+            String category,
+            Pageable pageable
+    );
+    Page<FinancialRecord> findByCategoryAndTransactionType(
+            String category,
+            String transactionType,
+            Pageable pageable
+    );
 }
