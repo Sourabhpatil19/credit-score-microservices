@@ -1,6 +1,7 @@
 package com.project.score_service.client;
 
 
+
 import com.project.score_service.dto.FinancialRecordResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

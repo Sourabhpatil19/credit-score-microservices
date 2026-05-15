@@ -3,29 +3,17 @@ package com.project.score_service.service;
 
 
 import com.project.score_service.client.DataCollectionFeignClient;
+import com.project.score_service.dto.CreditScoreResponseDto;
 import com.project.score_service.dto.FinancialRecordResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class CreditScoreService {
+public interface CreditScoreService {
 
-    private final DataCollectionFeignClient feignClient;
+    CreditScoreResponseDto calculateScore(Long userId);
 
-    public Integer calculateCreditScore(Long userId) {
-
-        List<FinancialRecordResponseDto> records =
-                feignClient.getRecordsByUserId(userId);
-
-        int score = 600;
-
-        if(records.size() > 5) {
-            score += 50;
-        }
-
-        return score;
-    }
+    CreditScoreResponseDto getScore(Long userId);
 }
+

@@ -66,8 +66,10 @@ services:
     container_name: api-gateway
     ports:
       - "8085:8085"
+
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
+
+        EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
     depends_on:
       - discovery-server
       - user-service
@@ -80,6 +82,9 @@ services:
       - "8082:8082"
 
     environment:
+      DB_URL: jdbc:mysql://mysql:3306/credit_system
+      DB_USERNAME: root
+      DB_PASSWORD: root
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka
 
     depends_on:
